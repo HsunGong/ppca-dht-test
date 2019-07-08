@@ -19,7 +19,8 @@ type dhtNode interface {
 	// quit node
 	Quit()
 
-	// Ping()
+	// check existence of node
+	Ping()
 }
 
 type dhtAdditive interface {
