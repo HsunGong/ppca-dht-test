@@ -1,0 +1,3 @@
+[submodule "chord"]
+	path = chord
+	url = git@github.com:HsunGong/chord.git
