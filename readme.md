@@ -1,20 +1,23 @@
 # DHT (beta)
 
+See project at [github](https://github.com/HsunGong/ppca-dht-test/wiki/) [acm wiki](https://acm.sjtu.edu.cn/wiki/PPCA_2019)
+
 ## Overview
 
 - A DHT can be viewed as a dictionary service distributed over a network: it provides access to a common shared key->value data-store, distributed over participating nodes with great performance and scalability.
 - From a user perspective, a DHT essentially provides a map interface, with two main operations: `put(key, value)` and `get(key)`. Get will retrieve values stored at a certain key while put (often called announce) will store a value on the network. Note that many values can be stored under the same key.
 - There are many algorithms to implement dht, where **Kademlia** DHT algorithm requires to contact only O(log(N)) nodes for a get operation, N being the number of nodes in the network. This property makes DHTs very scalable as demonstrated.
 
-Mor info in [Wiki:DHT](https://en.wikipedia.org/wiki/Distributed_hash_table)
+More info in [Wiki:DHT](https://en.wikipedia.org/wiki/Distributed_hash_table)
+
 
 ## Target
 - Use go-lang to implement a DHT with basic functions
 - Use this DHT to implement an easy application
 
-## Syllabus
+# Syllabus
 
-### Schedule
+## Schedule
 - Learn about Golang and at least one DHT protocol
   > **Project 1(Not constrained)**: get close to golang: implement a client-server protocol using golang. With naive tests.
   > forward message and mutli-threads(2 with client and server)
@@ -24,7 +27,7 @@ Mor info in [Wiki:DHT](https://en.wikipedia.org/wiki/Distributed_hash_table)
   > **Project 3\***: implement an application. No test.
 - Bonus: 
   > **Project 4\***implement DHT with another algorithm (as mentioned above in overview), or optimize your application.
-### Reference
+## Reference
 
 - Learn Go
 > [A Tour of Go](https://tour.golang.org/)\
@@ -42,17 +45,17 @@ Mor info in [Wiki:DHT](https://en.wikipedia.org/wiki/Distributed_hash_table)
 > [MIT](https://pdos.csail.mit.edu/papers/sit-phd-thesis.pdf)
 
 
-## Test(beta)
+# Test(beta)
   
-#### Range
+## Range
 
 - nodes in DHT network >= 50
 - `<key, value>` in DHT network >= 1500
 - Give some time for your network to resume stable.
 
-### Contents
+## Contents
 
-#### Requirements
+### Requirements
 
 (1) Implement this interface in `interface.go`
 ```go 
@@ -82,7 +85,7 @@ type dhtNode interface {
 (2) Overwrite in `userdef.go`
 `NewNode()`
 
-#### Tests
+### Tests
 
 - standard test
   > get, put, del, join, quit, ping
