@@ -1,4 +1,4 @@
-# DHT (beta)
+# DHT (stable)
 
 See project at [github](https://github.com/HsunGong/ppca-dht-test/wiki/) [acm wiki](https://acm.sjtu.edu.cn/wiki/PPCA_2019)
 
@@ -12,21 +12,16 @@ More info in [Wiki:DHT](https://en.wikipedia.org/wiki/Distributed_hash_table)
 
 
 ## Target
+
 - Use go-lang to implement a DHT with basic functions
 - Use this DHT to implement an easy application
 
-# Syllabus
+## Score
 
-## Schedule
-- Learn about Golang and at least one DHT protocol
-  > **Project 1(Not constrained)**: get close to golang: implement a client-server protocol using golang. With naive tests.
-  > forward message and mutli-threads(2 with client and server)
-- Implement a DHT protocol in Go
-  > **Project 2**: implement DHT: using any one model is allowed. With naive and strong tests. E.g. chatroom, torrent, dht-filesystem.
-- Build a higher level application on top of your DHT
-  > **Project 3\***: implement an application. No test.
-- Bonus: 
-  > **Project 4\***implement DHT with another algorithm (as mentioned above in overview), or optimize your application.
+- 70% - DHT tests
+- 20% - Applications with stable network
+- 10% - Bonus
+
 ## Reference
 
 - Learn Go
@@ -43,76 +38,3 @@ More info in [Wiki:DHT](https://en.wikipedia.org/wiki/Distributed_hash_table)
 > [Dixie](https://cit.dixie.edu/cs/3410/asst_chord.php)\
 > [CMU](https://www.cs.cmu.edu/~dga/15-744/S07/lectures/16-dht.pdf)\
 > [MIT](https://pdos.csail.mit.edu/papers/sit-phd-thesis.pdf)
-
-
-# Test(beta)
-  
-## Range
-
-- nodes in DHT network >= 50
-- `<key, value>` in DHT network >= 1500
-- Give some time for your network to resume stable.
-
-## Contents
-
-### Requirements
-
-(1) Implement this interface in `interface.go`
-```go 
-type dhtNode interface {
-    Get(k string) (string, bool)
-	Put(k string, v string) bool
-	Del(k string) bool
-	Run(wg *sync.WaitGroup)
-	Create()
-	Join(addr string) bool
-	Quit()
-	Ping(addr string) bool
-}
-```
-
-<!-- type dhtNode interface {
-    Get(k string) (string, bool)
-    Put(k string, v string) bool
-    Del(k string) bool
-    Run(wg *sync.WaitGroup)
-    Create()
-    Join(addr string) bool
-    Quit()
-    Ping(addr string) bool
-} -->
-
-(2) Overwrite in `userdef.go`
-`NewNode()`
-
-### Tests
-
-- standard test
-  > get, put, del, join, quit, ping
-- standard test of additive functions
-  > append info in `<k, v>`\
-  > del_append info in `<k,v>`
-
-- additive test
-  > get, put, del, join, quit, ping\
-  > force quit\
-  > load(max nodes and max data)\
-  > unstable put and get\
-  > mixed put, get, join, quit
-
-<!-- - 初始时由一个 DHT 节点组成网络
-- 循环五次：
-> A. 向网络中加入 15 个节点
-> B. 选择 5 个节点退出网络
-> 每次一个节点加入/一个节点退出后等待 3s
-- 上述的 A, B 操作之后均进行：
-> 等待 30s
-向 DHT 网络中插入 300 个键值对
-在网络中现有的键中随机选择 200 个进行查询操作并验证正确性
-从网络中现有的键中随机选择 150 个删除 -->
-
-## Score
-- 10% - learn go of navie protocol
-- 60% - DHT tests
-- 30% - Applications with stable network
-

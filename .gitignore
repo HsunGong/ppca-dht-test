@@ -6,3 +6,5 @@ ppca-dht
 
 !interface.go
 !userdef.go
+!main.go
+!standard.go
