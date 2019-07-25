@@ -56,9 +56,9 @@ func naiveTest() {
 func standardTest() {
 	info := make([]error, 7)
 	defer func() {
-		// if r := recover(); r != nil {
-		// 	red.Println("Accidently end: ", r)
-		// }
+		if r := recover(); r != nil {
+			red.Println("Accidently end: ", r)
+		}
 		for _, inf := range info {
 			totalCnt += inf.all
 			totalFail += inf.cnt
@@ -94,6 +94,7 @@ func standardTest() {
 	net := make([]int, 0, maxNode)
 
 	time.Sleep(time.Millisecond * 200)
+
 	nodeGroup[0].Create()
 	net = append(net, 0)
 
@@ -108,7 +109,7 @@ func standardTest() {
 			curport := config.Port + leavepos
 			addr := toAddr(localIP, curport)
 			cnt++
-			println(joinpos)
+			// println(joinpos)
 			if !nodeGroup[joinpos].Join(addr) {
 				failcnt++
 			}
@@ -153,7 +154,6 @@ func standardTest() {
 				break
 			}
 		}
-
 		info[2].initInfo("get(1)", failcnt, cnt)
 		info[2].finish()
 
@@ -239,85 +239,4 @@ func (e *error) finish() {
 	totalCnt += e.all
 	totalFail += e.cnt
 	e.printlnError()
-}
-
-func standardAdditionTest() {
-	// defer func() {
-	// 	if r := recover(); r != nil {
-	// 		red.Println("Accidently end: ", r)
-	// 	}
-	// }()
-
-	// nodeGroup = new([maxNode]dhtNode)
-	// keyArray = new([maxData]string)
-	// datalocal = make(map[string]string)
-	// nodeAddr = new([maxNode]string)
-
-	// maxNodeSize = 100
-	// maxDataSize = 1200
-	// roundNodeSize := 20
-	// roundDataSize := 300
-
-	// localIP = getIP()
-	// mp1 := make(map[string]string)
-	// mp2 := make(map[string]string)
-
-	// wg = new(sync.WaitGroup)
-	// for i := 0; i < maxNodeSize; i++ {
-	// 	curport := config.Port + i
-	// 	nodeGroup[i] = NewNode(curport)
-	// 	nodeAddr[i] = toAddr(localIP, curport)
-
-	// 	wg.Add(1)
-	// 	go nodeGroup[i].Run()
-	// }
-
-	// time.Sleep(time.Millisecond * 200)
-	// nodeGroup[0].Create()
-	// for i := 1; i < maxNodeSize; i++ {
-	// 	nodeGroup[i].Join(localIP + ":" + strconv.Itoa(1111+rand.Intn(i)))
-	// 	time.Sleep(time.Millisecond * 200)
-	// }
-
-	// time.Sleep(time.Millisecond * 200)
-	// for i := 1; i < int(maxDataSize); i++ {
-	// 	k := randString(50)
-	// 	v1 := randString(25)
-	// 	v2 := randString(25)
-	// 	mp1[k] = v1
-	// 	mp2[k] = v2
-	// }
-
-	// fmt.Println("Append")
-	// for k, v := range mp1 {
-	// 	ret := nodeGroup[rand.Intn(int(maxNodeSize))].AppendToData(k, v)
-	// 	if ret == 0 {
-	// 	}
-	// }
-
-	// for k := range mp1 {
-	// 	ret := nodeGroup[rand.Intn(int(maxNodeSize))].AppendToData(k, mp2[k])
-	// 	fmt.Printf("AppendAgain %s\n", k)
-	// 	if ret == 0 {
-	// 	}
-	// }
-	// fmt.Println("Get")
-	// for k := range mp1 {
-	// 	ok, ret := nodeGroup[rand.Intn(int(maxNodeSize))].Get(k)
-	// 	if !ok || ret != mp1[k]+mp2[k] {
-	// 	}
-	// }
-	// fmt.Println("RemoveFrom")
-	// for k := range mp1 {
-	// 	ret := nodeGroup[rand.Intn(int(maxNodeSize))].RemoveFromData(k, mp2[k])
-	// 	if ret == 0 {
-	// 	}
-	// }
-
-	// fmt.Println("Get After Remove")
-	// for k, v := range mp1 {
-	// 	ok, ret := nodeGroup[rand.Intn(int(maxNodeSize))].Get(k)
-	// 	if !ok || ret != v {
-	// 	}
-	// }
 }
