@@ -69,8 +69,8 @@ func main() {
 		naiveTest()
 	case 3:
 		blue.Println("Start Additive Tests")
-		if standardAdditionTest(); failrate() > maxFail {
-			green.Println("Passed")
+		if standardAdditionTest(); maxFail > failrate() {
+			green.Println("Passed with", failrate())
 		} else {
 			red.Println("Failed")
 			os.Exit(0)
@@ -78,8 +78,9 @@ func main() {
 		fallthrough
 	case 0:
 		blue.Println("Start Standard Tests")
-		if standardTest(); failrate() > maxFail {
-			green.Println("Passed Standard Tests")
+
+		if standardTest(); maxFail > failrate() {
+			green.Println("Passed Standard Tests with", failrate())
 		} else {
 			red.Println("Failed Standard Tests")
 			os.Exit(0)
@@ -87,16 +88,16 @@ func main() {
 		fallthrough
 	case 1:
 		blue.Println("Start Advanced Tests")
-		if advancedTest(); failrate() > maxFail {
-			green.Println("Passed Advanced Tests")
+		if advancedTest(); maxFail > failrate() {
+			green.Println("Passed Advanced Tests with", failrate())
 		} else {
 			red.Println("Failed Advanced Tests")
 			os.Exit(0)
 		}
 	case 2:
 		blue.Println("Start Additive Tests")
-		if standardAdditionTest(); failrate() > maxFail {
-			green.Println("Passed")
+		if standardAdditionTest(); maxFail > failrate() {
+			green.Println("Passed with", failrate())
 		} else {
 			red.Println("Failed")
 			os.Exit(0)

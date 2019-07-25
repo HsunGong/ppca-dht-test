@@ -54,9 +54,18 @@ func naiveTest() {
 }
 
 func standardTest() {
+	info := make([]error, 7)
 	defer func() {
-		if r := recover(); r != nil {
-			red.Println("Accidently end: ", r)
+		// if r := recover(); r != nil {
+		// 	red.Println("Accidently end: ", r)
+		// }
+		for _, inf := range info {
+			totalCnt += inf.all
+			totalFail += inf.cnt
+		}
+		if totalCnt == 0 {
+			totalCnt++
+			totalFail++
 		}
 	}()
 
@@ -65,7 +74,7 @@ func standardTest() {
 	datalocal = make(map[string]string)
 	nodeAddr = new([maxNode]string)
 
-	maxNodeSize = 80
+	maxNodeSize = 120
 	maxDataSize = 1200
 	roundNodeSize := 20
 	roundDataSize := 300
@@ -90,7 +99,6 @@ func standardTest() {
 
 	joinpos := 1
 	leavepos := 0
-	info := make([]error, 7)
 	for i := 1; i <= 5; i++ {
 		failcnt := 0
 		cnt := 0
@@ -100,6 +108,7 @@ func standardTest() {
 			curport := config.Port + leavepos
 			addr := toAddr(localIP, curport)
 			cnt++
+			println(joinpos)
 			if !nodeGroup[joinpos].Join(addr) {
 				failcnt++
 			}
@@ -111,7 +120,7 @@ func standardTest() {
 		info[0].initInfo("join(1)", failcnt, cnt)
 		info[0].finish()
 
-		time.Sleep(time.Second * 30)
+		time.Sleep(time.Second * 10)
 		cnt = 0
 		failcnt = 0
 		for j := 1; j <= roundDataSize; j++ {
@@ -173,7 +182,7 @@ func standardTest() {
 			time.Sleep(time.Millisecond * 1000)
 			leavepos++
 		}
-		time.Sleep(time.Second * 30)
+		time.Sleep(time.Second * 10)
 
 		cnt = 0
 		failcnt = 0
@@ -224,7 +233,6 @@ func standardTest() {
 		info[6].initInfo("remove(2)", failcnt, cnt)
 		info[6].finish()
 	}
-
 }
 
 func (e *error) finish() {
