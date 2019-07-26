@@ -23,6 +23,7 @@ func naiveTest() {
 		nodeAddr[i] = localIP + ":" + strconv.Itoa(curPort)
 		wg.Add(1)
 		go nodeGroup[i].Run()
+		
 	}
 	time.Sleep(time.Millisecond * 200)
 
