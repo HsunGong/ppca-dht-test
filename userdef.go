@@ -1,8 +1,10 @@
 package main
 
-import "ppca-dht/chord"
+import (
+	"dht/src/common"
+)
 
 // NewNode use your own node create method to overwrite
 func NewNode(port int) dhtNode {
-	return chord.NewNode(int32(port))
+	return common.NewNode(port)
 }
