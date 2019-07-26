@@ -9,3 +9,4 @@ ppca-dht
 !main.go
 !standard.go
 !advanced.go
+!util.go
