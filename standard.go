@@ -13,6 +13,8 @@ func naiveTest() {
 
 	localIP = getIP()
 	datalocal = make(map[string]string)
+	nodeGroup = new([maxNode]dhtNode)
+	nodeAddr = new([maxNode]string)
 
 	joinpos := 1
 	for i := 0; i < maxNodeSize; i++ {
