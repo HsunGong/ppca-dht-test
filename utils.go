@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	maxNode int = 200
+	maxNode int = 301
 	maxData int = 2000
 	maxFail     = 0.01
 	// config.Port   int   = 1111

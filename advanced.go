@@ -149,7 +149,7 @@ func testRandom(rate time.Duration) {
 	keyArray = new([maxData]string)
 	datalocal = make(map[string]string)
 	datamux := sync.Mutex{}
-	maxNodeSize = 150
+	maxNodeSize = 300
 
 	localIP = getIP()
 
