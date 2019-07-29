@@ -235,10 +235,8 @@ func standardTest() {
 		info[6].initInfo("remove(2)", failcnt, cnt)
 		info[6].finish()
 	}
-}
 
-func (e *error) finish() {
-	totalCnt += e.all
-	totalFail += e.cnt
-	e.printlnError()
+	for i := 0; i < maxNodeSize; i++ {
+		nodeGroup[i].Quit()
+	}
 }

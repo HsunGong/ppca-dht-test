@@ -17,8 +17,13 @@ type dhtNode interface {
 	// join node; tell pre you 2 coming
 	Join(addr string) bool
 
-	// quit node
+	// quit node, quit all go-routine services, flush all tables
 	Quit()
+
+	// test ForceQuit method which requires you no backup, no tell with quit
+	// however, you can stop go-routine if you want
+	// TA will check this function whether you statisify these conditions.
+	ForceQuit()
 
 	// check existence of node
 	Ping(addr string) bool

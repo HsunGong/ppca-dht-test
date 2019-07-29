@@ -8,7 +8,7 @@ import (
 	"net"
 	"sync"
 
-	"ppca-dht-test/src/github.com/fatih/color"
+	"github.com/fatih/color"
 )
 
 const (
@@ -38,9 +38,10 @@ var (
 )
 
 var (
-	letters   = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	totalFail int
-	totalCnt  int
+	letters    = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	totalFail  int
+	totalCnt   int
+	finalScore float64
 
 	// config    map[string]interface{}
 	config      configure
@@ -132,4 +133,10 @@ func (e *error) printlnError() {
 	} else {
 		green.Printf("%s Passed\n", e.e)
 	}
+}
+
+func (e *error) finish() {
+	totalCnt += e.all
+	totalFail += e.cnt
+	e.printlnError()
 }

@@ -8,18 +8,102 @@ import (
 )
 
 func advancedTest() {
-	//testWhenStabAndQuit(4)
-	//testWhenStabAndQuit(2)
+	testWhenStabAndQuit(4)
+	testWhenStabAndQuit(2)
+
 	testRandom(2)
 }
 
+func testForceQuit(rate time.Duration) {
+	blue.Println("Start FQ test")
+	var info error
+
+	defer func() {
+		if r := recover(); r != nil {
+			red.Println("Accidently end: ", r)
+		}
+
+		totalCnt += info.all
+		totalFail += info.cnt
+		if totalCnt == 0 {
+			totalCnt++
+			totalFail++
+		}
+	}()
+
+	nodeGroup = new([maxNode]dhtNode)
+	datalocal = make(map[string]string)
+	maxNodeSize = 110
+	maxDataSize = 1200
+
+	localIP = getIP()
+
+	for i := 0; i < maxNodeSize; i++ {
+		// fmt.Println("run ", i)
+		curport := config.Port + i
+		nodeGroup[i] = NewNode(curport)
+
+		go nodeGroup[i].Run()
+	}
+
+	nodeGroup[0].Create()
+	time.Sleep(time.Millisecond * 200)
+
+	for j := 1; j < maxNodeSize; j++ {
+		curport := config.Port
+		addr := toAddr(localIP, curport)
+
+		nodeGroup[j].Join(addr)
+		time.Sleep(time.Millisecond * 500)
+	}
+	time.Sleep(time.Second * rate * 10)
+
+	for j := 0; j < maxDataSize; j++ {
+		k := randString(50)
+		v := randString(50)
+		datalocal[k] = v
+		nodeGroup[rand.Intn(int(maxNodeSize))].Put(k, v)
+		time.Sleep(time.Millisecond * 5)
+	}
+	print(len(datalocal))
+
+	failcnt := 0
+	cnt := 0
+
+	round := 20
+	pos := 1
+	for i := 0; i < 5; i++ {
+		fmt.Println("Force some node to quit")
+		for j := pos; j-pos < round; j++ {
+			// fmt.Println("quit", j)
+			nodeGroup[j].ForceQuit()
+			time.Sleep(time.Millisecond * 200)
+		}
+		time.Sleep(time.Second * rate * 2)
+		pos += round
+
+		for tk, tv := range datalocal {
+			id := rand.Intn(maxNodeSize-pos) + pos
+			ok, res := nodeGroup[id].Get(tk)
+
+			if !ok || res != tv {
+				failcnt++
+			}
+			cnt++
+		}
+	}
+
+	info.initInfo("get while force quit less than 50% is fine", failcnt/50, cnt)
+	info.finish()
+}
+
 func testWhenStabAndQuit(rate time.Duration) {
-	fmt.Println("Start test StabAndQuit")
+	blue.Println("Start test StabAndQuit")
 	info := make([]error, 4)
 	defer func() {
-		// if r := recover(); r != nil {
-		// 	red.Println("Accidently end: ", r)
-		// }
+		if r := recover(); r != nil {
+			red.Println("Accidently end: ", r)
+		}
 		for _, inf := range info {
 			totalCnt += inf.all
 			totalFail += inf.cnt
@@ -123,18 +207,19 @@ func testWhenStabAndQuit(rate time.Duration) {
 	}
 	info[3].initInfo("get while quit", failcnt, cnt)
 	info[3].finish()
+
+	for i := 0; i < maxNodeSize; i++ {
+		nodeGroup[i].Quit()
+	}
 }
 
-// testWhileJoin
-// test random
-
 func testRandom(rate time.Duration) {
-	fmt.Println("Start random test")
+	blue.Println("Start random test")
 	info := make([]error, 4)
 	defer func() {
-		// if r := recover(); r != nil {
-		// 	red.Println("Accidently end: ", r)
-		// }
+		if r := recover(); r != nil {
+			red.Println("Accidently end: ", r)
+		}
 		for _, inf := range info {
 			totalCnt += inf.all
 			totalFail += inf.cnt
@@ -154,7 +239,7 @@ func testRandom(rate time.Duration) {
 	localIP = getIP()
 
 	for i := 0; i < maxNodeSize; i++ {
-		fmt.Println("run ", i)
+		// fmt.Println("run ", i)
 		curport := config.Port + i
 		nodeGroup[i] = NewNode(curport)
 
@@ -225,7 +310,7 @@ func testRandom(rate time.Duration) {
 				tmp := quitcnt + rand.Intn(nodecnt-quitcnt)
 				ok, ret := nodeGroup[tmp].Get(k)
 				if !ok || ret != v {
-					fmt.Println("get fail:", k, " => ", v, " from ", tmp)
+					// fmt.Println("get fail:", k, " => ", v, " from ", tmp)
 					failcnt3++
 				}
 				cnt3++
@@ -271,4 +356,8 @@ func testRandom(rate time.Duration) {
 	info[2].finish()
 	info[3].initInfo("get while quit", failcnt4, cnt4)
 	info[3].finish()
+
+	for i := 0; i < maxNodeSize; i++ {
+		nodeGroup[i].Quit()
+	}
 }

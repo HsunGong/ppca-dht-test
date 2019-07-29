@@ -3,9 +3,9 @@ ppca-dht
 *.log
 
 *.go
+userdef.go
 
 !interface.go
-!userdef.go
 !main.go
 !standard.go
 !advanced.go
