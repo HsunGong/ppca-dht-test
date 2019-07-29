@@ -5,13 +5,16 @@ type dhtNode interface {
 	Put(k string, v string) bool
 	Del(k string) bool
 
+	/* before run(), we have NewNode()
+	which will init datas*/
 	// start the service of goroutine
+	// do fix fingers, check pre or others here
 	Run()
 
 	// create a dht-net with this node as start node
 	Create()
 
-	// join node
+	// join node; tell pre you 2 coming
 	Join(addr string) bool
 
 	// quit node
@@ -20,6 +23,7 @@ type dhtNode interface {
 	// check existence of node
 	Ping(addr string) bool
 
+	// you can delete this function if you don't want to write.
 	Dump()
 }
 
