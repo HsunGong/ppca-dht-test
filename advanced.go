@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sync"
 	"time"
 )
 
 func advancedTest() {
-	testWhenStabAndQuit(4)
-	testWhenStabAndQuit(2)
-
-	testRandom()
+	//testWhenStabAndQuit(4)
+	//testWhenStabAndQuit(2)
+	testRandom(2)
 }
 
 func testWhenStabAndQuit(rate time.Duration) {
@@ -128,23 +128,147 @@ func testWhenStabAndQuit(rate time.Duration) {
 // testWhileJoin
 // test random
 
-func testRandom() {
-	go doPut()
-	go doDel()
-	go doJoin()
-	go doQuit()
+func testRandom(rate time.Duration) {
+	fmt.Println("Start random test")
+	info := make([]error, 4)
+	defer func() {
+		// if r := recover(); r != nil {
+		// 	red.Println("Accidently end: ", r)
+		// }
+		for _, inf := range info {
+			totalCnt += inf.all
+			totalFail += inf.cnt
+		}
+		if totalCnt == 0 {
+			totalCnt++
+			totalFail++
+		}
+	}()
+
+	nodeGroup = new([maxNode]dhtNode)
+	keyArray = new([maxData]string)
+	datalocal = make(map[string]string)
+	datamux := sync.Mutex{}
+	maxNodeSize = 300
+
+	localIP = getIP()
+
+	for i := 0; i < maxNodeSize; i++ {
+		fmt.Println("run ", i)
+		curport := config.Port + i
+		nodeGroup[i] = NewNode(curport)
+
+		go nodeGroup[i].Run()
+	}
+	time.Sleep(time.Millisecond * rate * 100)
+
+	nodeGroup[0].Create()
+
+	failcnt1 := 0
+	cnt1 := 0
+	running := true
+	nodecnt := 1
+	go func() {
+		fmt.Println("start join ")
+		for running && nodecnt < maxNodeSize {
+			curport := config.Port
+			addr := toAddr(localIP, curport)
+			cnt1++
+			if !nodeGroup[nodecnt].Join(addr) {
+				failcnt1++
+			}
+			time.Sleep(time.Millisecond * 100 * rate)
+			nodecnt++
+		}
+	}()
+
+	//time.Sleep(time.Second * rate * 10)
+
+	// fmt.Println("Force some node to quit")
+	// for i := 150; i < maxNodeSize; i++ {
+	// 	nodeGroup[i].ForceQuit()
+	// 	time.Sleep(time.Millisecond * 200)
+	// }
+	// fmt.Println("Finish")
+
+	failcnt2 := 0
+	quitcnt := 1
+	cnt2 := 0
+	datacnt := 0
+	time.Sleep(5 * time.Second)
+	go func() {
+		fmt.Println("start put")
+		for running {
+
+			k := randString(50)
+			v := randString(50)
+			keyArray[datacnt] = k
+			datamux.Lock()
+			datalocal[k] = v
+			datamux.Unlock()
+			cnt2++
+			if !nodeGroup[quitcnt+rand.Intn(nodecnt-quitcnt)].Put(k, v) {
+				failcnt2++
+			}
+			datacnt++
+			time.Sleep(time.Millisecond * rate)
+		}
+	}()
+
+	failcnt3 := 0
+	cnt3 := 0
+	go func() {
+		fmt.Println("start get")
+		for {
+			datamux.Lock()
+			for k, v := range datalocal {
+				tmp := quitcnt + rand.Intn(nodecnt-quitcnt)
+				ok, ret := nodeGroup[tmp].Get(k)
+				if !ok || ret != v {
+					fmt.Println("get fail:", k, " => ", v, " from ", tmp)
+					failcnt3++
+				}
+				cnt3++
+				time.Sleep(time.Millisecond * rate)
+			}
+			datamux.Unlock()
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	failcnt4 := 0
+	cnt4 := 0
+	time.Sleep(10 * time.Second)
+
+	go func() {
+		fmt.Println("start quit")
+		for {
+			if quitcnt < nodecnt-1 {
+				for j := 1; j <= 10; j++ {
+					rk := keyArray[rand.Intn(datacnt)]
+					ok, ret := nodeGroup[quitcnt+rand.Intn(nodecnt-quitcnt)].Get(rk)
+
+					cnt4++
+					if !ok || ret != datalocal[rk] {
+						failcnt4++
+					}
+					time.Sleep(time.Millisecond * rate * 10)
+				}
+
+				nodeGroup[quitcnt].Quit()
+				quitcnt++
+			}
+			time.Sleep(time.Millisecond * 100 * rate)
+		}
+	}()
+	time.Sleep(5 * time.Minute)
+	running = false
+	info[0].initInfo("join", failcnt1, cnt1)
+	info[0].finish()
+	info[1].initInfo("put", failcnt2, cnt2)
+	info[1].finish()
+	info[2].initInfo("get", failcnt3, cnt3)
+	info[2].finish()
+	info[3].initInfo("get while quit", failcnt4, cnt4)
+	info[3].finish()
 }
-
-func doPut() {
-
-}
-
-func doDel() {
-
-}
-
-func doJoin() {
-
-}
-
-func doQuit() {}

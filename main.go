@@ -69,12 +69,12 @@ func main() {
 		naiveTest()
 	case 3:
 		blue.Println("Start Additive Tests")
-		if standardAdditionTest(); maxFail > failrate() {
-			green.Println("Passed with", failrate())
-		} else {
-			red.Println("Failed")
-			os.Exit(0)
-		}
+		//if standardAdditionTest(); maxFail > failrate() {
+		//	green.Println("Passed with", failrate())
+		//} else {
+		//	red.Println("Failed")
+		//	os.Exit(0)
+		//}
 		fallthrough
 	case 0:
 		blue.Println("Start Standard Tests")
@@ -96,12 +96,12 @@ func main() {
 		}
 	case 2:
 		blue.Println("Start Additive Tests")
-		if standardAdditionTest(); maxFail > failrate() {
-			green.Println("Passed with", failrate())
-		} else {
-			red.Println("Failed")
-			os.Exit(0)
-		}
+		//if standardAdditionTest(); maxFail > failrate() {
+		//	green.Println("Passed with", failrate())
+		//} else {
+		//	red.Println("Failed")
+		//	os.Exit(0)
+		//}
 	default:
 		red.Print("Select error, ask -h for help")
 		os.Exit(0)

@@ -15,7 +15,7 @@ func naiveTest() {
 	datalocal = make(map[string]string)
 	nodeGroup = new([maxNode]dhtNode)
 	nodeAddr = new([maxNode]string)
-
+	maxNodeSize = 5
 	joinpos := 1
 	for i := 0; i < maxNodeSize; i++ {
 		curPort := config.Port + i
@@ -23,7 +23,6 @@ func naiveTest() {
 		nodeAddr[i] = localIP + ":" + strconv.Itoa(curPort)
 		wg.Add(1)
 		go nodeGroup[i].Run()
-		
 	}
 	time.Sleep(time.Millisecond * 200)
 
