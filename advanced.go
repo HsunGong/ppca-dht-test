@@ -10,7 +10,7 @@ import (
 func advancedTest() {
 	//testWhenStabAndQuit(4)
 	//testWhenStabAndQuit(2)
-	testRandom(4)
+	testRandom(2)
 }
 
 func testWhenStabAndQuit(rate time.Duration) {
