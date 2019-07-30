@@ -8,6 +8,7 @@ import (
 )
 
 func advancedTest() {
+	//testForceQuit(4)
 	testWhenStabAndQuit(4)
 	testWhenStabAndQuit(2)
 
@@ -234,7 +235,7 @@ func testRandom(rate time.Duration) {
 	keyArray = new([maxData]string)
 	datalocal = make(map[string]string)
 	datamux := sync.Mutex{}
-	maxNodeSize = 300
+	maxNodeSize = 200
 
 	localIP = getIP()
 
@@ -268,7 +269,6 @@ func testRandom(rate time.Duration) {
 	}()
 
 	//time.Sleep(time.Second * rate * 10)
-
 	// fmt.Println("Force some node to quit")
 	// for i := 150; i < maxNodeSize; i++ {
 	// 	nodeGroup[i].ForceQuit()
@@ -280,7 +280,7 @@ func testRandom(rate time.Duration) {
 	quitcnt := 1
 	cnt2 := 0
 	datacnt := 0
-	time.Sleep(5 * time.Second)
+	time.Sleep(2 * time.Second)
 	go func() {
 		fmt.Println("start put")
 		for running {
@@ -292,7 +292,7 @@ func testRandom(rate time.Duration) {
 			datalocal[k] = v
 			datamux.Unlock()
 			cnt2++
-			if !nodeGroup[quitcnt+rand.Intn(nodecnt-quitcnt)].Put(k, v) {
+			if running && !nodeGroup[quitcnt+rand.Intn(nodecnt-quitcnt)].Put(k, v) {
 				failcnt2++
 			}
 			datacnt++
@@ -304,13 +304,16 @@ func testRandom(rate time.Duration) {
 	cnt3 := 0
 	go func() {
 		fmt.Println("start get")
-		for {
+		for running {
 			datamux.Lock()
 			for k, v := range datalocal {
+				if !running {
+					break
+				}
 				tmp := quitcnt + rand.Intn(nodecnt-quitcnt)
 				ok, ret := nodeGroup[tmp].Get(k)
 				if !ok || ret != v {
-					// fmt.Println("get fail:", k, " => ", v, " from ", tmp)
+					//fmt.Println("get fail:", k, " => ", v, " from ", tmp)
 					failcnt3++
 				}
 				cnt3++
@@ -323,18 +326,19 @@ func testRandom(rate time.Duration) {
 
 	failcnt4 := 0
 	cnt4 := 0
-	time.Sleep(10 * time.Second)
-
+	time.Sleep(5 * time.Second)
+	done := make(chan bool)
 	go func() {
 		fmt.Println("start quit")
-		for {
+		for running {
 			if quitcnt < nodecnt-1 {
 				for j := 1; j <= 10; j++ {
 					rk := keyArray[rand.Intn(datacnt)]
-					ok, ret := nodeGroup[quitcnt+rand.Intn(nodecnt-quitcnt)].Get(rk)
-
+					tmp := quitcnt + rand.Intn(nodecnt-quitcnt)
+					ok, ret := nodeGroup[tmp].Get(rk)
 					cnt4++
 					if !ok || ret != datalocal[rk] {
+						//fmt.Println("get fail:", rk, " => ", datalocal[rk], " from ", tmp)
 						failcnt4++
 					}
 					time.Sleep(time.Millisecond * rate * 10)
@@ -342,12 +346,18 @@ func testRandom(rate time.Duration) {
 
 				nodeGroup[quitcnt].Quit()
 				quitcnt++
+			} else if nodecnt == maxNodeSize {
+				done <- true
 			}
 			time.Sleep(time.Millisecond * 100 * rate)
 		}
 	}()
-	time.Sleep(5 * time.Minute)
+	<-done
 	running = false
+	time.Sleep(2 * time.Second)
+	nodeGroup[0].Quit()
+	nodeGroup[maxNodeSize-1].Quit()
+
 	info[0].initInfo("join", failcnt1, cnt1)
 	info[0].finish()
 	info[1].initInfo("put", failcnt2, cnt2)
@@ -357,7 +367,4 @@ func testRandom(rate time.Duration) {
 	info[3].initInfo("get while quit", failcnt4, cnt4)
 	info[3].finish()
 
-	for i := 0; i < maxNodeSize; i++ {
-		nodeGroup[i].Quit()
-	}
 }
