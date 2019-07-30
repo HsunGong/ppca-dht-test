@@ -283,7 +283,7 @@ func testRandom(rate time.Duration) {
 	time.Sleep(2 * time.Second)
 	go func() {
 		fmt.Println("start put")
-		for running {
+		for running && datacnt < maxDataSize {
 
 			k := randString(50)
 			v := randString(50)
