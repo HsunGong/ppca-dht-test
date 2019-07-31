@@ -12,7 +12,7 @@ func advancedTest() {
 	testWhenStabAndQuit(4)
 	testWhenStabAndQuit(2)
 
-	testRandom(2)
+	testRandom(4)
 }
 
 func testForceQuit(rate time.Duration) {
